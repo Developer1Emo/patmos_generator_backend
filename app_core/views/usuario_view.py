@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from app_core.services.implementations.usuario_service import UserService
 from app_core.services.interfaces.usuario_service_interface import UserServiceInterface
 from app_core.serializers.usuario_serializer import UsuarioSerializer
+from app_core.serializers.crearUsuarioDTO_serializer import CrearUsuarioSerializer
 from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiExample
 
 
@@ -13,20 +14,26 @@ class CreateUsuarioView(APIView):
         
     )
     def post(self, request):
-        identificacion = request.data.get('identificacion')
-        nombre = request.data.get('nombre')
-        rol = request.data.get('rol')
-        email = request.data.get('email')
-        password = request.data.get('password')
-        estadoUsuario = True  # Asumimos que el status por defecto es True
-        telefono = request.data.get('telefono')
-        direccion = request.data.get('direccion')
+
+        # Usamos el serializer para deserializar los datos
+        serializer = CrearUsuarioSerializer(data=request.data)
+
         
         # Llamamos al servicio para crear el usuario
         try:
-            usuario = self.usuario_service.crear_usuario(
-                identificacion, nombre, rol, email, password, estadoUsuario, telefono, direccion
-            )
+            if serializer.is_valid():
+                # Llamamos al servicio para crear el usuario
+                usuario = self.usuario_service.crear_usuario(
+                    serializer.validated_data['identificacion'],
+                    serializer.validated_data['nombreCompleto'],
+                    serializer.validated_data['rol'],
+                    serializer.validated_data['email'],
+                    serializer.validated_data['password'],
+                    True,
+                    serializer.validated_data['telefono'],
+                    serializer.validated_data['direccion'])
+            else:
+                return Response("Error en if"+serializer.errors, status=400)
         except ValueError as e:
             return Response({"detail": str(e)}, status=400)
 
