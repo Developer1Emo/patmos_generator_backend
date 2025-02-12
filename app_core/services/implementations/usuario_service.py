@@ -9,11 +9,13 @@ class UserService(UserServiceInterface):
         
         usuario = self.obtener_usuario_por_identificacion(identificacion)
         if usuario:
-            raise ValueError("Error al crear el usuario. El identificador ya está en uso.") 
+            return "Error al crear el usuario. El identificador ya está en uso."
+            
         else:
             usuario = self.obtener_usuario_por_email(email)
             if usuario:
-                raise ValueError("Error al crear el usuario. El correo ya está en uso.")
+                return "Error al crear el usuario. El correo ya está en uso."
+                
             else:
                 try:
                     password_hash = make_password(password)  # Cifra la contraseña
@@ -29,9 +31,9 @@ class UserService(UserServiceInterface):
                     )
                     # Llamamos al método save() para guardar el usuario en la base de datos
                     usuario.save()
-                    return usuario
+                    return "Exito"
                 except Exception as e:
-                    raise Exception("Error al crear el usuario. " + str(e))
+                    return "Error al crear el usuario. " + str(e)
               
     
     def obtener_usuario_por_identificacion(self, identificacion):

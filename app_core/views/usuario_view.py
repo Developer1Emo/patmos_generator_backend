@@ -32,11 +32,18 @@ class CreateUsuarioView(APIView):
                     serializer.validated_data['telefono'],
                     serializer.validated_data['direccion']
                 )
-                # Si la creación del usuario es exitosa
-                error = False
-                respuesta = {"mensaje": "Operación exitosa"}
-                # Aquí solo pasamos el diccionario directamente
-                return Response({'error': error, 'respuesta': respuesta}, status=201)
+                if usuario == "Exito":
+                    # Si la creación del usuario es exitosa
+                    error = False
+                    respuesta = {"mensaje": "Operación exitosa"}
+                    # Aquí solo pasamos el diccionario directamente
+                    return Response({'error': error, 'respuesta': respuesta}, status=201)
+                else:
+                    # Si la creación del usuario es exitosa
+                    error = True
+                    respuesta = {"mensaje": ""+usuario}
+                    # Aquí solo pasamos el diccionario directamente
+                    return Response({'error': error, 'respuesta': respuesta}, status=400)
             except ValueError as e:
                 # Si ocurre un error en la creación del usuario
                 error = True
