@@ -5,6 +5,7 @@ from app_core.services.interfaces.usuario_service_interface import UserServiceIn
 from app_core.serializers.usuario_serializer import UsuarioSerializer
 from app_core.serializers.crearUsuarioDTO_serializer import CrearUsuarioSerializer
 from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiExample
+from app_core.DTO.mensajeDTO import MensajeDTO
 
 
 class CreateUsuarioView(APIView):
@@ -14,14 +15,12 @@ class CreateUsuarioView(APIView):
         
     )
     def post(self, request):
-
         # Usamos el serializer para deserializar los datos
         serializer = CrearUsuarioSerializer(data=request.data)
 
-        
-        # Llamamos al servicio para crear el usuario
-        try:
-            if serializer.is_valid():
+        # Validamos el serializer antes de acceder a sus datos
+        if serializer.is_valid():
+            try:
                 # Llamamos al servicio para crear el usuario
                 usuario = self.usuario_service.crear_usuario(
                     serializer.validated_data['identificacion'],
@@ -29,17 +28,27 @@ class CreateUsuarioView(APIView):
                     serializer.validated_data['rol'],
                     serializer.validated_data['email'],
                     serializer.validated_data['password'],
-                    True,
+                    True,  # Estado del usuario
                     serializer.validated_data['telefono'],
-                    serializer.validated_data['direccion'])
-            else:
-                return Response("Error en if"+serializer.errors, status=400)
-        except ValueError as e:
-            return Response({"detail": str(e)}, status=400)
-
-        # Serializamos la respuesta y la devolvemos
-        serializer = UsuarioSerializer(usuario)
-        return Response(serializer.data, status=201)
+                    serializer.validated_data['direccion']
+                )
+                # Si la creación del usuario es exitosa
+                error = False
+                respuesta = {"mensaje": "Operación exitosa"}
+                # Aquí solo pasamos el diccionario directamente
+                return Response({'error': error, 'respuesta': respuesta}, status=201)
+            except ValueError as e:
+                # Si ocurre un error en la creación del usuario
+                error = True
+                respuesta = {"mensaje": str(e)}
+                # Aquí solo pasamos el diccionario directamente
+                return Response({'error': error, 'respuesta': respuesta}, status=400)
+        else:
+            # Si el serializer no es válido
+            error = True
+            respuesta = {"mensaje": "Ha ocurrido algo al tratar de Guardar el usuario. Contacte al administrador"}
+            # Aquí solo pasamos el diccionario directamente
+            return Response({'error': error, 'respuesta': respuesta}, status=400)
     
 class ObtenerUsuarioView(APIView):
     
