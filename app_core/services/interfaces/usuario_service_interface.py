@@ -6,5 +6,16 @@ class UserServiceInterface(ABC):
         pass
 
     @abstractmethod
-    def obtener_usuario_por_identificacion(self, user_id):
+    def obtener_usuario_por_id(self, user_id):
+        pass
+
+    @abstractmethod
+    def obtenerUsuarios(self):
+        pass
+
+    @abstractmethod
+    def obtener_usuario_por_identificacion(self, user_identificacion):
+        pass
+    @abstractmethod
+    def actualizarUsuario(self, user_id,data):
         pass
