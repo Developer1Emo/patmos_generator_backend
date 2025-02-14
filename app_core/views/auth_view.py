@@ -30,6 +30,7 @@ class IniciarSesionView(APIView):
                 
                 if token_serializer.is_valid():
                     error=False
+                    print(token_serializer)
                     return Response({'error': error, 'respuesta': token_serializer.data}, status=200)
                 error=True  
                 respuesta= {"mensaje":""+token_serializer.errors}

@@ -53,6 +53,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
+    #'app_core.middleware.JWTAuthenticationMiddleware',
     
 ]
 CORS_ALLOW_ALL_ORIGINS = True
@@ -148,7 +149,7 @@ REST_FRAMEWORK = {
    
    
 }
-JWT_SECRET_KEY = 'Ns&}5_CBk"W2KY6k8Ssgj'
+JWT_SECRET_KEY = 'vX9Z9c3nw47bQT1xzR3ZxaT9f8j6RwkpqC0K5 '
 
 SPECTACULAR_SETTINGS = {
     'TITLE': 'Your Project API-PATMOS GENERATOS',

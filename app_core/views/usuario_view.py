@@ -1,5 +1,9 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
+
+from app_core.services.implementations.auth_service import AuthService
+from app_core.services.interfaces.auth_service_interface import AuthServiceInterface
+from app_core.utils import jwt_utils
 from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiExample
 from rest_framework.pagination import PageNumberPagination  # Importa la paginación
 from rest_framework.exceptions import NotFound
@@ -11,6 +15,7 @@ from app_core.services.interfaces.usuario_service_interface import UserServiceIn
 from app_core.serializers.usuario_serializer import UsuarioSerializer
 from app_core.serializers.crearUsuarioDTO_serializer import CrearUsuarioSerializer
 from app_core.DTO.mensajeDTO import MensajeDTO
+from rest_framework.permissions import IsAuthenticated
 
 class CreateUsuarioView(APIView):
     usuario_service: UserServiceInterface = UserService()
@@ -63,7 +68,7 @@ class CreateUsuarioView(APIView):
     
 class GetUsuariosView(APIView):
     usuario_service: UserServiceInterface = UserService()
-
+    permission_classes:[IsAuthenticated]
     @extend_schema(
         responses={200: UsuarioSerializer},
     )
