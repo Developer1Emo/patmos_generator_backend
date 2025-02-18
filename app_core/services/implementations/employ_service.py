@@ -54,6 +54,6 @@ class EmployService(EmployServiceInterface):
         # Filtrar los registros que están solo en df_a
         safit_exclusive = result[result['_merge'] == 'left_only'].drop(columns=['_merge'])
 
-        print(safit_exclusive.columns)
+        #print(safit_exclusive.columns)
 
         return safit_exclusive
