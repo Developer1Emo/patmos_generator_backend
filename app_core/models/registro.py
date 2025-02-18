@@ -1,5 +1,5 @@
 from django.db import models
-from app_core.models.usuario import Usuario  # Importamos el modelo Usuario
+from app_core.models.usuario import Usuario
 
 class Registro(models.Model):
     idUser = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='registros')

@@ -239,7 +239,7 @@ class ConversorEstructurado():
         ultimo_reg_mov=int(ultimo_reg_mov)
         # Convertir la columna a string y rellenar ceros a la izquierda (3 dígitos)
         safit['SUCURSAL DE FACTURA'] = safit['SUCURSAL DE FACTURA'].astype(str).str.zfill(3)
-        print(safit['SUCURSAL DE FACTURA'])
+        # print(safit['SUCURSAL DE FACTURA'])
     # Lista de columnas a convertir
         columnas_a_convertir = [
             'Valor bruto local', 'Valor descuentos local', 'Valor subtotal local',

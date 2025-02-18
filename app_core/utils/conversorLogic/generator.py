@@ -2,8 +2,9 @@ import pandas as pd
 from app_core.utils.conversorLogic.convers_estruc_plan import ConversorEstructurado
 from app_core.utils.conversorLogic.utils_convert.util_tools import ToolsConverter
 
-class SafiteGenerator():
 
+class SafiteGenerator():
+    
     def create_plane(self,safit_df,email):
         
         inicio=ConversorEstructurado.inicio_plano()
@@ -73,12 +74,9 @@ class SafiteGenerator():
                 text+=line+"\n"
 
             
-            print(f"Exito")
+            #print(f"Exito")
             return text
         
         except Exception as e:
             print(f"Error: {e}")
             return "Error: "+e
-
-
-    

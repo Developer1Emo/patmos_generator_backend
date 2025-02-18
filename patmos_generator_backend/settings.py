@@ -85,11 +85,14 @@ WSGI_APPLICATION = 'patmos_generator_backend.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'bd_patmosg',
+        'NAME': 'db_patmosg',
         'USER': 'postgres',
         'PASSWORD': 'Colombia1.*',
         'HOST': 'localhost',
         'PORT': '5432',
+        'OPTIONS': {
+            'client_encoding': 'UTF8',  # Asegura que se usa UTF-8
+        },
     }
 }
 
