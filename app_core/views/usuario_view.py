@@ -16,6 +16,7 @@ from app_core.serializers.usuario_serializer import UsuarioSerializer
 from app_core.serializers.crearUsuarioDTO_serializer import CrearUsuarioSerializer
 from app_core.DTO.mensajeDTO import MensajeDTO
 from rest_framework.permissions import IsAuthenticated
+from django.db.models import Q
 
 class CreateUsuarioView(APIView):
     usuario_service: UserServiceInterface = UserService()
@@ -69,9 +70,7 @@ class CreateUsuarioView(APIView):
 class GetUsuariosView(APIView):
     usuario_service: UserServiceInterface = UserService()
     permission_classes:[IsAuthenticated]
-    @extend_schema(
-        responses={200: UsuarioSerializer},
-    )
+
     def get(self, request):
         try:
             # Usamos el paginador de Django REST Framework
@@ -122,3 +121,36 @@ class ActualizarUsuarioView(APIView):
             error=True
             respuesta = {"mensaje": ""+result}
             return Response({'error': error, 'respuesta': respuesta}, status=400) 
+
+class GetUsuariosCadenaView(APIView):
+    def get(self, request):
+        try:
+            # Usamos el paginador de Django REST Framework
+            paginator = PageNumberPagination()
+            paginator.page_size = 10  # Número de usuarios por página
+            
+            # Obtener la cadena de búsqueda de los parámetros de la query
+            busqueda = request.query_params.get('busqueda', '')
+
+            # Filtrar los usuarios si hay una búsqueda
+            if busqueda:
+                usuarios = Usuario.objects.filter(
+                    Q(identificacion__icontains=busqueda) |
+                    Q(nombre__icontains=busqueda)
+                )
+            else:
+                # Si no hay búsqueda, obtener todos los usuarios
+                usuarios = Usuario.objects.all()
+
+            # Paginamos los usuarios
+            result_page = paginator.paginate_queryset(usuarios, request)
+            serializer = UsuarioSerializer(result_page, many=True)
+
+            # Devolvemos la paginación junto con los datos serializados
+            return paginator.get_paginated_response(serializer.data)
+
+        except Exception as e:
+            return Response({
+                'error': True,
+                'respuesta': {'mensaje': f'Error al obtener los usuarios: {str(e)}'}
+            }, status=500)
