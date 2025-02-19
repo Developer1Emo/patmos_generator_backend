@@ -1,6 +1,9 @@
+import datetime
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
+from app_core.models.registro import Registro
+from app_core.serializers.registro_serializer import RegistroSerializer
 from app_core.services.implementations.auth_service import AuthService
 from app_core.services.interfaces.auth_service_interface import AuthServiceInterface
 from app_core.utils import jwt_utils
@@ -153,4 +156,57 @@ class GetUsuariosCadenaView(APIView):
             return Response({
                 'error': True,
                 'respuesta': {'mensaje': f'Error al obtener los usuarios: {str(e)}'}
+            }, status=500)
+
+class GetSearchRegView(APIView):
+   def get(self, request):
+        try:
+            # Usamos el paginador de Django REST Framework
+            paginator = PageNumberPagination()
+            paginator.page_size = 10  # Número de registros por página
+
+            # Obtener los parámetros de fecha y correo desde la query string
+            fecha_desde = request.query_params.get('fecha_desde', '')
+            fecha_hasta = request.query_params.get('fecha_hasta', '')
+            correo_usuario = request.query_params.get('correo', '')
+
+            # Validación de fechas (si se pasan, deben ser convertibles a datetime)
+            if fecha_desde and fecha_hasta:
+                try:
+                    fecha_desde = datetime.strptime(fecha_desde, '%Y-%m-%d')
+                    fecha_hasta = datetime.strptime(fecha_hasta, '%Y-%m-%d')
+                except ValueError:
+                    return Response({
+                        'error': True,
+                        'respuesta': {'mensaje': 'Formato de fecha incorrecto. Use YYYY-MM-DD.'}
+                    }, status=400)
+            else:
+                fecha_desde = fecha_hasta = None
+
+            # Filtrar registros según las condiciones
+            if correo_usuario:
+                # Si se pasó correo, filtrar por rango de fechas y correo del usuario
+                registros = Registro.objects.filter(
+                    Q(fecha__gte=fecha_desde) if fecha_desde else Q() &
+                    Q(fecha__lte=fecha_hasta) if fecha_hasta else Q() &
+                    Q(usuario__email__icontains=correo_usuario)
+                )
+            else:
+                # Si no se pasó correo, solo filtrar por el rango de fechas
+                registros = Registro.objects.filter(
+                    Q(fecha__gte=fecha_desde) if fecha_desde else Q() &
+                    Q(fecha__lte=fecha_hasta) if fecha_hasta else Q()
+                )
+
+            # Paginamos los registros
+            result_page = paginator.paginate_queryset(registros, request)
+            serializer = RegistroSerializer(result_page, many=True)
+
+            # Devolvemos la paginación junto con los datos serializados
+            return paginator.get_paginated_response(serializer.data)
+
+        except Exception as e:
+            return Response({
+                'error': True,
+                'respuesta': {'mensaje': f'Error al obtener los registros: {str(e)}'}
             }, status=500)

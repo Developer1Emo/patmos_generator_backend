@@ -1,3 +1,4 @@
 # Ignorar entornos virtuales
 venv/
 .env/
+exports
